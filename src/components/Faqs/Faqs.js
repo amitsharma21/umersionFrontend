@@ -1,6 +1,12 @@
 import React, { useEffect } from "react";
 
-import { CircularProgress, Button, Card, Typography } from "@mui/material";
+import {
+  CircularProgress,
+  Button,
+  Card,
+  Typography,
+  ButtonGroup,
+} from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 
@@ -26,7 +32,14 @@ const Faqs = () => {
   return (
     <Layout>
       <Card className={classes.Card}>
-        <Typography variant="h5"> Frequently Asked Questions</Typography>
+        <div className={classes.Header}>
+          <Typography variant="h5">Frequently Asked Questions</Typography>
+          <ButtonGroup>
+            <Button variant="contained" color="primary" onClick={addFaq}>
+              Create New
+            </Button>
+          </ButtonGroup>
+        </div>
         {isLoading ? (
           <CircularProgress />
         ) : (
@@ -39,11 +52,6 @@ const Faqs = () => {
                 id={faq._id}
               />
             ))}
-            <div className={classes.ButtonDiv}>
-              <Button onClick={addFaq} variant="contained" color="primary">
-                Add New FAQ
-              </Button>
-            </div>
           </>
         )}
       </Card>

@@ -25,6 +25,7 @@ import Layout from "../../../UI/Layout/Layout";
 import * as actionTypes from "../../../constants/actionTypes";
 import Feelings from "./Feelings/Feelings";
 import Notes from "./Notes/Notes";
+import Remainders from "./Remainders/Remainders";
 
 const style = {
   position: "absolute",
@@ -199,6 +200,14 @@ const User = () => {
         <Grid container>
           <Grid item xs={12}>
             <Notes />
+          </Grid>
+        </Grid>
+
+        {/* -------------------------User Remainders here------------------------------ */}
+
+        <Grid container>
+          <Grid item xs={12}>
+            <Remainders />
           </Grid>
         </Grid>
       </Layout>

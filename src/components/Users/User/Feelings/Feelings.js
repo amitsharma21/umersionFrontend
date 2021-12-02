@@ -29,7 +29,7 @@ const Feelings = () => {
   }, []);
   return (
     <Card className={classes.Card}>
-      <Typography variant="h5"> Feelings Check-In</Typography>
+      <Typography variant="h5"> User Feelings </Typography>
       {feelings === null ? (
         <CircularProgress />
       ) : (
@@ -51,7 +51,7 @@ const Feelings = () => {
             </TableRow>
           </TableHead>
           {feelings.length === 0 ? (
-            <Typography variant="h5">No Feelings for given user</Typography>
+            <Typography variant="p">No Feelings for given user</Typography>
           ) : (
             <TableBody>
               {feelings.map((feeling) => (

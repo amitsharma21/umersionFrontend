@@ -8,8 +8,17 @@ export default makeStyles(() => ({
   Header: {
     display: "flex",
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     alignItems: "center",
+  },
+  Body: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  Form: {
+    minWidth: "600px",
   },
   Icon: {
     cursor: "pointer",

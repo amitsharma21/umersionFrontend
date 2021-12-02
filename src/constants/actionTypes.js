@@ -1,5 +1,6 @@
 //Auth
 export const SIGNIN = "SIGNIN";
+export const LOGOUT = "LOGOUT";
 
 //User fetching
 export const FETCH_ALL_USERS = "FETCH_ALL_USERS";

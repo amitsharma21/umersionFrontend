@@ -144,7 +144,6 @@ const VideoTracks = () => {
                       <DeleteIcon
                         color="error"
                         onClick={() => deleteVideoHandler(video._id)}
-                        title="delete"
                         className={classes.Icon}
                       />
                     </ButtonGroup>

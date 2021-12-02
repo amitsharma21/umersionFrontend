@@ -9,6 +9,7 @@ import {
   Paper,
 } from "@mui/material";
 import PrivacyTipIcon from "@mui/icons-material/PrivacyTip";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import RedeemIcon from "@mui/icons-material/Redeem";
 import GavelIcon from "@mui/icons-material/Gavel";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
@@ -16,6 +17,7 @@ import LiveHelpIcon from "@mui/icons-material/LiveHelp";
 import MusicNoteIcon from "@mui/icons-material/MusicNote";
 import OndemandVideoIcon from "@mui/icons-material/OndemandVideo";
 import CategoryIcon from "@mui/icons-material/Category";
+import AirplaneTicketIcon from "@mui/icons-material/AirplaneTicket";
 import { useHistory } from "react-router-dom";
 
 import useStyles from "./styles";
@@ -47,6 +49,18 @@ const SideBar = () => {
             <ListItem
               button
               onClick={() => {
+                history.push("/dashboard/blogs");
+              }}
+            >
+              <ListItemIcon>
+                <LibraryBooksIcon />
+              </ListItemIcon>
+              <ListItemText primary="Blogs" />
+            </ListItem>
+
+            <ListItem
+              button
+              onClick={() => {
                 history.push("/dashboard/audiotracks");
               }}
             >
@@ -66,6 +80,18 @@ const SideBar = () => {
                 <OndemandVideoIcon />
               </ListItemIcon>
               <ListItemText primary="Video Tracks" />
+            </ListItem>
+
+            <ListItem
+              button
+              onClick={() => {
+                history.push("/dashboard/motivation");
+              }}
+            >
+              <ListItemIcon>
+                <AirplaneTicketIcon />
+              </ListItemIcon>
+              <ListItemText primary="Motivation" />
             </ListItem>
 
             <ListItem

@@ -34,7 +34,7 @@ const Auth = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(signin(formData, history));
+    dispatch(signin(formData));
   };
 
   const handleChange = (e) => {

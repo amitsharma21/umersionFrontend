@@ -17,6 +17,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 
 import useStyles from "./styles";
+import { URL } from "../../../../constants/url";
 
 const style = {
   position: "absolute",
@@ -34,13 +35,13 @@ const Notes = () => {
   const classes = useStyles();
   const { id } = useParams();
   const [modal, setModal] = useState(false);
-  const [notes, setNotes] = useState(null);
+  const [remainders, setRemainders] = useState(null);
 
   useEffect(async () => {
-    const { data } = await axios.get("http://localhost:5000/note/fetchall", {
+    const { data } = await axios.get(`${URL}/remainder/fetchall`, {
       headers: { userid: id },
     });
-    setNotes(data);
+    setRemainders(data);
   }, []);
 
   const closeModal = () => {
@@ -49,37 +50,41 @@ const Notes = () => {
 
   return (
     <Card className={classes.Card}>
-      <Typography variant="h5"> User Notes</Typography>
-      {notes === null ? (
+      <Typography variant="h5"> User Remainders</Typography>
+      {remainders === null ? (
         <CircularProgress />
       ) : (
         <Table aria-label="users table">
           <TableHead>
             <TableRow>
               <TableCell align="center">
-                <strong>Title</strong>
+                <strong>Time</strong>
               </TableCell>
               <TableCell align="center">
-                <strong>Description</strong>
+                <strong>Label</strong>
               </TableCell>
               <TableCell align="center">
-                <strong>Action</strong>
+                <strong>Ring Duration</strong>
+              </TableCell>
+              <TableCell align="center">
+                <strong>Snooze Duration</strong>
+              </TableCell>
+              <TableCell align="center">
+                <strong>Actions</strong>
               </TableCell>
             </TableRow>
           </TableHead>
-          {notes.length === 0 ? (
-            <Typography variant="p">No Feelings For Given User</Typography>
+          {remainders.length === 0 ? (
+            <Typography variant="p">No Remainders For Given User</Typography>
           ) : (
             <TableBody>
-              {notes.map((note) => (
-                <TableRow key={note._id}>
-                  <TableCell align="center">{note.title}</TableCell>
+              {remainders.map((remainder) => (
+                <TableRow key={remainder._id}>
+                  <TableCell align="center">{remainder.time}</TableCell>
+                  <TableCell align="center">{remainder.label}</TableCell>
+                  <TableCell align="center">{remainder.ringDuration}</TableCell>
                   <TableCell align="center">
-                    {note.description.substr(
-                      0,
-                      Math.min(20, note.description.length)
-                    )}
-                    ....
+                    {remainder.snoozeDuration}
                   </TableCell>
                   <TableCell align="center">
                     <RemoveRedEyeIcon
