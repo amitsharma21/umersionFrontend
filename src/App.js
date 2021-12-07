@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Grid } from "@material-ui/core";
+import { Grid } from "@mui/material";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 
 //Navigations and Sidebar

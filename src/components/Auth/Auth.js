@@ -7,8 +7,8 @@ import {
   Typography,
   Container,
   Button,
-} from "@material-ui/core";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+} from "@mui/material";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
 

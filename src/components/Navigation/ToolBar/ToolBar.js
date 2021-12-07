@@ -1,6 +1,6 @@
 import React from "react";
 
-import { AppBar, Typography } from "@material-ui/core";
+import { AppBar, Typography } from "@mui/material";
 import { Link, useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 
