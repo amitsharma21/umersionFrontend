@@ -10,45 +10,27 @@ import {
   TableHead,
   TableRow,
   ButtonGroup,
-  Modal,
-  Box,
   Button,
 } from "@mui/material";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
+import { useHistory } from "react-router-dom";
 
 import useStyles from "./styles";
 import Layout from "../../UI/Layout/Layout";
 import { URL } from "../../constants/url";
 
-//these styels are for modals
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 650,
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  p: 4,
-};
-
 const VideoTracks = () => {
   const classes = useStyles();
+  const history = useHistory();
   const [videoTracks, setVideoTracks] = useState(null);
-  const [category, setCategory] = useState(null);
-  const [videoModal, setVideoModal] = useState(false);
-  const [currentVideo, setCurrentVideo] = useState(null);
-  const [editVideoModal, setEditVideoModal] = useState(false);
-  const [createVideoModal, setCreateVideoModal] = useState(false);
+  const [renderLoading, setRenderLoading] = useState(true);
 
   useEffect(async () => {
     const { data } = await axios.get(`${URL}/video/fetchall`);
     setVideoTracks(data);
-    const result = await axios.get(`${URL}/category/fetchall`);
-    setCategory(result.data);
+    setRenderLoading(false);
   }, []);
 
   const deleteVideoHandler = async (id) => {
@@ -61,15 +43,6 @@ const VideoTracks = () => {
       await axios.delete(`${URL}/video/delete/${id}`);
     }
   };
-  const closeVideoModal = () => {
-    setVideoModal(false);
-  };
-  const closeEditVideoModal = () => {
-    setEditVideoModal(false);
-  };
-  const closeCreateVideoModal = () => {
-    setCreateVideoModal(false);
-  };
 
   return (
     <Layout>
@@ -80,13 +53,13 @@ const VideoTracks = () => {
             <Button
               variant="contained"
               color="primary"
-              onClick={() => setCreateVideoModal(true)}
+              onClick={() => history.push("/dashboard/videotracks/create")}
             >
               Create New
             </Button>
           </ButtonGroup>
         </div>
-        {videoTracks === null ? (
+        {renderLoading ? (
           <CircularProgress />
         ) : (
           <Table className={classes.table} aria-label="users table">
@@ -99,7 +72,7 @@ const VideoTracks = () => {
                   <strong>Description</strong>
                 </TableCell>
                 <TableCell align="center">
-                  <strong>Category</strong>
+                  <strong>Pricing</strong>
                 </TableCell>
                 <TableCell align="center">
                   <strong>Actions</strong>
@@ -107,7 +80,7 @@ const VideoTracks = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {videoTracks.map((video) => (
+              {videoTracks?.map((video) => (
                 <TableRow key={video._id}>
                   <TableCell component="th" scope="row" align="center">
                     {video.title}
@@ -119,27 +92,22 @@ const VideoTracks = () => {
                     )}
                     ....
                   </TableCell>
-                  <TableCell align="center">{video.category}</TableCell>
+                  <TableCell align="center">
+                    {video.premium === true ? "Premium" : "Free"}
+                  </TableCell>
                   <TableCell align="center">
                     <ButtonGroup
                       variant="outlined"
                       style={{ marginBottom: "10px" }}
                     >
-                      <PlayArrowIcon
-                        color="primary"
-                        className={classes.Icon}
-                        onClick={() => {
-                          setVideoModal(true);
-                          setCurrentVideo(video);
-                        }}
-                      />
                       <EditIcon
                         color="primary"
                         className={classes.Icon}
-                        onClick={() => {
-                          setEditVideoModal(true);
-                          setCurrentVideo(video);
-                        }}
+                        onClick={() =>
+                          history.push(
+                            `/dashboard/videotracks/edit/${video._id}`
+                          )
+                        }
                       />
                       <DeleteIcon
                         color="error"
@@ -154,40 +122,6 @@ const VideoTracks = () => {
           </Table>
         )}
       </Card>
-
-      {/* ---------------------video Modal--------------------------- */}
-      <Modal
-        open={videoModal}
-        onClose={closeVideoModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <video controls src={`${URL}/video/${currentVideo?.video}`}></video>
-        </Box>
-      </Modal>
-      {/* ---------------------Edit video details modal---------------- */}
-      <Modal
-        open={editVideoModal}
-        onClose={closeEditVideoModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography variant="h5">Edit Video details</Typography>
-        </Box>
-      </Modal>
-      {/* ---------------------Create video details modal---------------- */}
-      <Modal
-        open={createVideoModal}
-        onClose={closeCreateVideoModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <Typography variant="h5">Create the new Video</Typography>
-        </Box>
-      </Modal>
     </Layout>
   );
 };

@@ -10,43 +10,27 @@ import {
   TableHead,
   TableRow,
   ButtonGroup,
-  Box,
-  Modal,
+  Button,
 } from "@mui/material";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import FilterAltSharpIcon from "@mui/icons-material/FilterAltSharp";
 import axios from "axios";
+import { useHistory } from "react-router-dom";
 
 import useStyles from "./styles";
 import Layout from "../../UI/Layout/Layout";
 import { URL } from "../../constants/url";
 
-//these styels are for modals
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 650,
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  p: 4,
-};
-
 const AudioTracks = () => {
   const classes = useStyles();
+  const history = useHistory();
   const [audioTracks, setAudioTracks] = useState(null);
-  const [audioModal, setAudioModal] = useState(false);
-  const [category, setCategory] = useState(null);
+  const [renderLoading, setRenderLoading] = useState(true);
 
   useEffect(async () => {
     const { data } = await axios.get(`${URL}/music/fetchall`);
     setAudioTracks(data);
-    const result = await axios.get(`${URL}/category/fetchall`);
-    setCategory(result.data);
+    setRenderLoading(false);
   }, []);
 
   const deleteAudioHandler = async (id) => {
@@ -59,9 +43,6 @@ const AudioTracks = () => {
       await axios.delete(`${URL}/music/delete/${id}`);
     }
   };
-  const closeAudioModal = () => {
-    setAudioModal(false);
-  };
 
   return (
     <Layout>
@@ -69,11 +50,16 @@ const AudioTracks = () => {
         <div className={classes.Header}>
           <Typography variant="h5">Audio Tracks</Typography>
           <ButtonGroup>
-            <CloudUploadIcon />
-            <FilterAltSharpIcon />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => history.push("/dashboard/audiotracks/create")}
+            >
+              Create New
+            </Button>
           </ButtonGroup>
         </div>
-        {audioTracks === null ? (
+        {renderLoading ? (
           <CircularProgress />
         ) : (
           <Table className={classes.table} aria-label="users table">
@@ -86,7 +72,7 @@ const AudioTracks = () => {
                   <strong>Description</strong>
                 </TableCell>
                 <TableCell align="center">
-                  <strong>Category</strong>
+                  <strong>Pricing</strong>
                 </TableCell>
                 <TableCell align="center">
                   <strong>Actions</strong>
@@ -94,7 +80,7 @@ const AudioTracks = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {audioTracks.map((audio) => (
+              {audioTracks?.map((audio) => (
                 <TableRow key={audio._id}>
                   <TableCell component="th" scope="row" align="center">
                     {audio.title}
@@ -106,20 +92,23 @@ const AudioTracks = () => {
                     )}
                     ....
                   </TableCell>
-                  <TableCell align="center">{audio.category}</TableCell>
+                  <TableCell align="center">
+                    {audio.premium ? "Premium" : "Free"}
+                  </TableCell>
                   <TableCell align="center">
                     <ButtonGroup
                       variant="outlined"
                       style={{ marginBottom: "10px" }}
                     >
-                      <PlayArrowIcon
+                      <EditIcon
                         color="primary"
                         className={classes.Icon}
-                        onClick={() => {
-                          setAudioModal(true);
-                        }}
+                        onClick={() =>
+                          history.push(
+                            `/dashboard/audiotracks/edit/${audio._id}`
+                          )
+                        }
                       />
-                      <EditIcon color="primary" className={classes.Icon} />
                       <DeleteIcon
                         color="error"
                         onClick={() => deleteAudioHandler(audio._id)}
@@ -134,18 +123,6 @@ const AudioTracks = () => {
           </Table>
         )}
       </Card>
-
-      {/* ---------------------Audio Modal--------------------------- */}
-      <Modal
-        open={audioModal}
-        onClose={closeAudioModal}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <audio controls src={`${URL}/music/1635322244156.mp3`}></audio>
-        </Box>
-      </Modal>
     </Layout>
   );
 };

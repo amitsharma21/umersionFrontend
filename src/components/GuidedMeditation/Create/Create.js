@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Card,
@@ -6,67 +6,66 @@ import {
   TextField,
   Button,
   CircularProgress,
+  Select,
+  InputLabel,
   MenuItem,
   FormControl,
-  InputLabel,
-  Select,
 } from "@mui/material";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 
 import Layout from "../../../UI/Layout/Layout";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import useStyles from "./styles";
 import { URL } from "../../../constants/url";
 
 function Create() {
   const classes = useStyles();
   const history = useHistory();
-  const [fileUploadedSuccessfully, setFileUploadedSuccessfully] =
-    useState(false);
-  const [file, setFile] = useState(null);
-  const [fileLoading, setFileLoading] = useState(false);
-  const [blogLoading, setBlogLoading] = useState(false);
+  const [
+    thumbnailFileUploadedSuccessfully,
+    setThumbnailFileUploadedSuccessfully,
+  ] = useState(false);
+  const [thumbnailFile, setThumbnailFile] = useState(null);
+  const [thumbnailFileLoading, setThumbnailFileLoading] = useState(false);
+  const [guidedMeditationLoading, setGuidedMeditationLoading] = useState(false);
+  const [renderLoading, setRenderLoading] = useState(true);
   const [categories, setCategories] = useState(null);
   const [subCategories, setSubCategories] = useState(null);
   const [goodSubCategories, setGoodSubCategories] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [renderLoading, setRenderLoading] = useState(true);
 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     tags: "",
-    body: "<p></p>",
-    image: "",
     category: "",
     subCategory: "",
+    thumbnail: "",
   });
 
   useEffect(async () => {
-    let result = await axios.get(`${URL}/blogcategory/fetchall`);
+    let result = await axios.get(`${URL}/guidedmeditationcategory/fetchall`);
     setCategories(result.data);
-    result = await axios.get(`${URL}/blogsubcategory/fetchall`);
+    result = await axios.get(`${URL}/guidedmeditationsubcategory/fetchall`);
     setSubCategories(result.data);
     setRenderLoading(false);
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setBlogLoading(true);
+    setGuidedMeditationLoading(true);
     try {
-      await axios.post(`${URL}/blog/create`, formData);
-      history.replace("/dashboard/blogs");
-      alert("Blog Created Successfully");
+      await axios.post(`${URL}/guidedmeditation/create`, formData);
+      history.replace("/dashboard/guidedmeditation");
+      alert("Guided Meditation Created Successfully");
     } catch (error) {
       alert(error.message);
     }
-    setBlogLoading(false);
+    setGuidedMeditationLoading(false);
   };
 
-  const uploadFile = () => {
-    setFileLoading(true);
+  const uploadThumbnailFile = () => {
+    setThumbnailFileLoading(true);
     // const FileData = new FormData();
     // FileData.append("demo file", file, file.name);
     // axios
@@ -80,9 +79,9 @@ function Create() {
 
     //   });
     setTimeout(() => {
-      setFileLoading(false);
-      setFileUploadedSuccessfully(true);
-      setFile(null);
+      setThumbnailFileLoading(false);
+      setThumbnailFileUploadedSuccessfully(true);
+      setThumbnailFile(null);
     }, 2000);
   };
 
@@ -90,9 +89,9 @@ function Create() {
     <Layout>
       <Card className={classes.Card}>
         <div className={classes.Header}>
-          <Typography variant="h5">Add Blog</Typography>
+          <Typography variant="h5">Add Guided Meditation</Typography>
         </div>
-        {renderLoading === true ? (
+        {renderLoading ? (
           <CircularProgress />
         ) : (
           <div className={classes.Body}>
@@ -101,7 +100,7 @@ function Create() {
                 <div className={classes.Input}>
                   <TextField
                     required
-                    label="Blog Title"
+                    label="Guided Meditation Name"
                     value={formData.title}
                     variant="outlined"
                     fullWidth
@@ -113,7 +112,7 @@ function Create() {
                 <div className={classes.Input}>
                   <TextField
                     required
-                    label="Blog Description"
+                    label="Guided Meditation Description"
                     value={formData.description}
                     variant="outlined"
                     fullWidth
@@ -125,7 +124,7 @@ function Create() {
                 <div className={classes.Input}>
                   <TextField
                     required
-                    label="Blog Tags"
+                    label="Guided Meditation Tags"
                     value={formData.tags}
                     variant="outlined"
                     fullWidth
@@ -136,10 +135,10 @@ function Create() {
                 </div>
                 <div className={classes.Input}>
                   <FormControl fullWidth>
-                    <InputLabel>Blog Category</InputLabel>
+                    <InputLabel>Guided Meditation Category</InputLabel>
                     <Select
                       required
-                      label="Blog category"
+                      label="Guided Meditation category"
                       value={formData.category}
                       onChange={(e) => {
                         setFormData({ ...formData, category: e.target.value });
@@ -161,9 +160,9 @@ function Create() {
                 </div>
                 <div className={classes.Input}>
                   <FormControl fullWidth>
-                    <InputLabel>Blog SubCategory</InputLabel>
+                    <InputLabel>Guided Meditation SubCategory</InputLabel>
                     <Select
-                      label="Blog Subcategory"
+                      label="Guided Meditation Subcategory"
                       value={formData.subCategory}
                       required
                       onChange={(e) => {
@@ -182,26 +181,17 @@ function Create() {
                     </Select>
                   </FormControl>
                 </div>
-                <div className={classes.Input}>
-                  <CKEditor
-                    editor={ClassicEditor}
-                    data={formData.body}
-                    onChange={(event, editor) => {
-                      setFormData({ ...formData, body: editor.getData() });
-                    }}
-                  />
-                </div>
                 <div className={classes.FileInput}>
                   <input
                     type="file"
                     accept="image/*"
                     required
-                    disabled={fileUploadedSuccessfully}
+                    disabled={thumbnailFileUploadedSuccessfully}
                     onChange={(e) => {
-                      setFile({ file: e.target.files[0] });
+                      setThumbnailFile({ file: e.target.files[0] });
                       setFormData({
                         ...formData,
-                        image: e.target.files[0].name,
+                        thumbnail: e.target.files[0].name,
                       });
                     }}
                   />
@@ -209,28 +199,30 @@ function Create() {
                     variant="contained"
                     color="primary"
                     disabled={
-                      file === null || fileUploadedSuccessfully === true
+                      thumbnailFile === null ||
+                      thumbnailFileUploadedSuccessfully === true
                     }
-                    onClick={uploadFile}
+                    onClick={uploadThumbnailFile}
                   >
-                    {fileLoading ? (
+                    {thumbnailFileLoading ? (
                       <CircularProgress color="inherit" />
                     ) : (
                       "Upload Thumbnail"
                     )}
                   </Button>
                 </div>
+
                 <div className={classes.Button}>
                   <Button
                     type="submit"
                     variant="contained"
                     color="primary"
-                    disabled={fileUploadedSuccessfully === false}
+                    disabled={thumbnailFileUploadedSuccessfully === false}
                   >
-                    {blogLoading ? (
+                    {guidedMeditationLoading ? (
                       <CircularProgress color="inherit" />
                     ) : (
-                      "Add Blog"
+                      "Add Guided Meditation"
                     )}
                   </Button>
                 </div>

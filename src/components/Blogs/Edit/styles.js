@@ -3,7 +3,7 @@ import { makeStyles } from "@mui/styles";
 export default makeStyles(() => ({
   Card: {
     padding: "10px",
-    minWidth: "820px",
+    minWidth: "650px",
   },
   Header: {
     display: "flex",

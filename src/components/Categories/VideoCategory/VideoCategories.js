@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   Card,
   Typography,
-  CircularProgress,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   ButtonGroup,
   Button,
+  CircularProgress,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -18,28 +18,31 @@ import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 
+import Layout from "../../../UI/Layout/Layout";
 import useStyles from "./styles";
-import Layout from "../../UI/Layout/Layout";
-import { URL } from "../../constants/url";
+import { URL } from "../../../constants/url";
 
-const GuidedMeditation = () => {
+const Blogs = () => {
   const classes = useStyles();
   const history = useHistory();
-  const [guidedMeditation, setGuidedMeditation] = useState(null);
+  const [videoCategories, setVideoCategories] = useState(null);
+  const [renderLoading, setRenderLoading] = useState(true);
 
   useEffect(async () => {
-    const { data } = await axios.get(`${URL}/guidedmeditation/fetchall`);
-    setGuidedMeditation(data);
+    const { data } = await axios.get(`${URL}/videocategory/fetchall`);
+    setVideoCategories(data);
+    setRenderLoading(false);
   }, []);
 
-  const deleteGuidedMeditationHandler = async (id) => {
-    if (window.confirm("Do you want to delete this Guided Meditation")) {
-      const newArray = guidedMeditation.filter((single) => {
-        if (single._id !== id) return true;
+  const deleteVideoCategoryHandler = async (id) => {
+    if (window.confirm("Do you want to delete this Category")) {
+      const newArray = videoCategories.filter((category) => {
+        if (category._id !== id) return true;
         else return false;
       });
-      setGuidedMeditation(newArray);
-      await axios.delete(`${URL}/guidedmeditation/delete/${id}`);
+      setVideoCategories(newArray);
+      await axios.delete(`${URL}/videocategory/delete/${id}`);
+      alert("Category Deleted Successfully");
     }
   };
 
@@ -47,81 +50,77 @@ const GuidedMeditation = () => {
     <Layout>
       <Card className={classes.Card}>
         <div className={classes.Header}>
-          <Typography variant="h5">Guided Meditation</Typography>
+          <Typography variant="h5">Video Categories</Typography>
           <ButtonGroup>
             <Button
               variant="contained"
               color="primary"
-              onClick={() => history.push("/dashboard/guidedmeditation/create")}
+              onClick={() => history.push("/dashboard/categories/video/create")}
             >
               Create New
             </Button>
           </ButtonGroup>
         </div>
-        {guidedMeditation === null ? (
+        {renderLoading ? (
           <CircularProgress />
         ) : (
-          <Table className={classes.table} aria-label="users table">
+          <Table className={classes.table} aria-label="video category table">
             <TableHead>
               <TableRow>
                 <TableCell align="center">
+                  <strong>Id</strong>
+                </TableCell>
+                <TableCell align="center">
                   <strong>Title</strong>
                 </TableCell>
-                <TableCell align="center">
-                  <strong>Description</strong>
-                </TableCell>
-                <TableCell align="center">
-                  <strong>Media Tracks</strong>
-                </TableCell>
+
                 <TableCell align="center">
                   <strong>Actions</strong>
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {guidedMeditation.map((single) => (
-                <TableRow key={single._id}>
+              {videoCategories.map((videoCategory) => (
+                <TableRow key={videoCategory._id}>
                   <TableCell component="th" scope="row" align="center">
-                    {single.title}
+                    {videoCategory._id}
                   </TableCell>
                   <TableCell align="center">
-                    {single.description.substr(
+                    {videoCategory.title.substr(
                       0,
-                      Math.min(20, single.description.length)
+                      Math.min(20, videoCategory.title.length)
                     )}
                     ....
                   </TableCell>
-                  <TableCell align="center">
-                    <RemoveRedEyeIcon
-                      color="warning"
-                      className={classes.Icon}
-                      onClick={() =>
-                        history.push(
-                          `/dashboard/guidedmeditation/view/${single._id}`
-                        )
-                      }
-                    />
-                  </TableCell>
+
                   <TableCell align="center">
                     <ButtonGroup
                       variant="outlined"
                       style={{ marginBottom: "10px" }}
                     >
+                      <RemoveRedEyeIcon
+                        color="warning"
+                        className={classes.Icon}
+                        onClick={() => {
+                          history.push(
+                            `/dashboard/categories/video/view/${videoCategory._id}`
+                          );
+                        }}
+                      />
                       <EditIcon
                         color="primary"
                         className={classes.Icon}
-                        onClick={() =>
+                        onClick={() => {
                           history.push(
-                            `/dashboard/guidedmeditation/edit/${single._id}`
-                          )
-                        }
+                            `/dashboard/categories/video/edit/${videoCategory._id}`
+                          );
+                        }}
                       />
                       <DeleteIcon
                         color="error"
                         onClick={() =>
-                          deleteGuidedMeditationHandler(single._id)
+                          deleteVideoCategoryHandler(videoCategory._id)
                         }
-                        title="delete"
                         className={classes.Icon}
                       />
                     </ButtonGroup>
@@ -136,4 +135,4 @@ const GuidedMeditation = () => {
   );
 };
 
-export default GuidedMeditation;
+export default Blogs;

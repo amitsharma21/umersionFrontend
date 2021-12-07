@@ -63,6 +63,7 @@ const Blogs = () => {
       });
       setBlogs(newBlogsArray);
       await axios.delete(`${URL}/blog/delete/${id}`);
+      alert("Blogs Deleted Successfully");
     }
   };
 
@@ -187,7 +188,10 @@ const Blogs = () => {
                       <EditIcon
                         color="primary"
                         className={classes.Icon}
-                        onClick={() => editConfigHandler(blog)}
+                        // onClick={() => editConfigHandler(blog)}
+                        onClick={() => {
+                          history.push(`/dashboard/blog/edit/${blog._id}`);
+                        }}
                       />
                       <DeleteIcon
                         color="error"

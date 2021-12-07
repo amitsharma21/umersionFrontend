@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   Card,
@@ -6,67 +6,80 @@ import {
   TextField,
   Button,
   CircularProgress,
+  Select,
+  InputLabel,
   MenuItem,
   FormControl,
-  InputLabel,
-  Select,
 } from "@mui/material";
 import axios from "axios";
-import { useHistory } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 
 import Layout from "../../../UI/Layout/Layout";
-import { CKEditor } from "@ckeditor/ckeditor5-react";
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import useStyles from "./styles";
 import { URL } from "../../../constants/url";
 
 function Create() {
   const classes = useStyles();
   const history = useHistory();
-  const [fileUploadedSuccessfully, setFileUploadedSuccessfully] =
+  const { id } = useParams();
+  const [videoFileUploadedSuccessfully, setVideoFileUploadedSuccessfully] =
     useState(false);
-  const [file, setFile] = useState(null);
-  const [fileLoading, setFileLoading] = useState(false);
-  const [blogLoading, setBlogLoading] = useState(false);
+  const [videoFile, setVideoFile] = useState(null);
+  const [
+    thumbnailFileUploadedSuccessfully,
+    setThumbnailFileUploadedSuccessfully,
+  ] = useState(false);
+  const [thumbnailFile, setThumbnailFile] = useState(null);
+  const [videoFileLoading, setVideoFileLoading] = useState(false);
+  const [thumbnailFileLoading, setThumbnailFileLoading] = useState(false);
+  const [videoLoading, setVideoLoading] = useState(false);
+  const [renderLoading, setRenderLoading] = useState(true);
   const [categories, setCategories] = useState(null);
   const [subCategories, setSubCategories] = useState(null);
   const [goodSubCategories, setGoodSubCategories] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [renderLoading, setRenderLoading] = useState(true);
 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     tags: "",
-    body: "<p></p>",
-    image: "",
+    premium: "",
     category: "",
     subCategory: "",
+    video: "",
+    thumbnail: "",
   });
 
   useEffect(async () => {
-    let result = await axios.get(`${URL}/blogcategory/fetchall`);
+    let result = await axios.get(`${URL}/videocategory/fetchall`);
     setCategories(result.data);
-    result = await axios.get(`${URL}/blogsubcategory/fetchall`);
+    result = await axios.get(`${URL}/videosubcategory/fetchall`);
     setSubCategories(result.data);
+    result = await axios.get(`${URL}/video/fetchsingle/${id}`);
+    setFormData({
+      ...formData,
+      title: result.data.title,
+      description: result.data.description,
+      tags: result.data.tags,
+    });
     setRenderLoading(false);
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setBlogLoading(true);
+    setVideoLoading(true);
     try {
-      await axios.post(`${URL}/blog/create`, formData);
-      history.replace("/dashboard/blogs");
-      alert("Blog Created Successfully");
+      await axios.patch(`${URL}/video/update/${id}`, formData);
+      history.replace("/dashboard/videotracks");
+      alert("Video updated Successfully");
     } catch (error) {
       alert(error.message);
     }
-    setBlogLoading(false);
+    setVideoLoading(false);
   };
 
-  const uploadFile = () => {
-    setFileLoading(true);
+  const uploadVideoFile = () => {
+    setVideoFileLoading(true);
     // const FileData = new FormData();
     // FileData.append("demo file", file, file.name);
     // axios
@@ -80,9 +93,30 @@ function Create() {
 
     //   });
     setTimeout(() => {
-      setFileLoading(false);
-      setFileUploadedSuccessfully(true);
-      setFile(null);
+      setVideoFileLoading(false);
+      setVideoFileUploadedSuccessfully(true);
+      setVideoFile(null);
+    }, 2000);
+  };
+
+  const uploadThumbnailFile = () => {
+    setThumbnailFileLoading(true);
+    // const FileData = new FormData();
+    // FileData.append("demo file", file, file.name);
+    // axios
+    //   .post(
+    //     "https://71xwinhfsf.execute-api.ap-south-1.amazonaws.com/prod/file-upload",
+    //     FormData
+    //   )
+    //   .then((data) => {
+    //     setLoading(false);
+    //     console.log(data);
+
+    //   });
+    setTimeout(() => {
+      setThumbnailFileLoading(false);
+      setThumbnailFileUploadedSuccessfully(true);
+      setThumbnailFile(null);
     }, 2000);
   };
 
@@ -90,9 +124,9 @@ function Create() {
     <Layout>
       <Card className={classes.Card}>
         <div className={classes.Header}>
-          <Typography variant="h5">Add Blog</Typography>
+          <Typography variant="h5">Edit Video Track</Typography>
         </div>
-        {renderLoading === true ? (
+        {renderLoading ? (
           <CircularProgress />
         ) : (
           <div className={classes.Body}>
@@ -101,7 +135,7 @@ function Create() {
                 <div className={classes.Input}>
                   <TextField
                     required
-                    label="Blog Title"
+                    label="Video Name"
                     value={formData.title}
                     variant="outlined"
                     fullWidth
@@ -113,7 +147,7 @@ function Create() {
                 <div className={classes.Input}>
                   <TextField
                     required
-                    label="Blog Description"
+                    label="Video Description"
                     value={formData.description}
                     variant="outlined"
                     fullWidth
@@ -125,7 +159,7 @@ function Create() {
                 <div className={classes.Input}>
                   <TextField
                     required
-                    label="Blog Tags"
+                    label="Video Tags"
                     value={formData.tags}
                     variant="outlined"
                     fullWidth
@@ -136,11 +170,11 @@ function Create() {
                 </div>
                 <div className={classes.Input}>
                   <FormControl fullWidth>
-                    <InputLabel>Blog Category</InputLabel>
+                    <InputLabel>Video Category</InputLabel>
                     <Select
-                      required
-                      label="Blog category"
+                      label="Video category"
                       value={formData.category}
+                      required
                       onChange={(e) => {
                         setFormData({ ...formData, category: e.target.value });
                         setSelectedCategory(e.target.value);
@@ -161,11 +195,11 @@ function Create() {
                 </div>
                 <div className={classes.Input}>
                   <FormControl fullWidth>
-                    <InputLabel>Blog SubCategory</InputLabel>
+                    <InputLabel>Video SubCategory</InputLabel>
                     <Select
-                      label="Blog Subcategory"
-                      value={formData.subCategory}
                       required
+                      label="Video Subcategory"
+                      value={formData.subCategory}
                       onChange={(e) => {
                         setFormData({
                           ...formData,
@@ -182,26 +216,18 @@ function Create() {
                     </Select>
                   </FormControl>
                 </div>
-                <div className={classes.Input}>
-                  <CKEditor
-                    editor={ClassicEditor}
-                    data={formData.body}
-                    onChange={(event, editor) => {
-                      setFormData({ ...formData, body: editor.getData() });
-                    }}
-                  />
-                </div>
+
                 <div className={classes.FileInput}>
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="video/*"
                     required
-                    disabled={fileUploadedSuccessfully}
+                    disabled={videoFileUploadedSuccessfully}
                     onChange={(e) => {
-                      setFile({ file: e.target.files[0] });
+                      setVideoFile({ file: e.target.files[0] });
                       setFormData({
                         ...formData,
-                        image: e.target.files[0].name,
+                        video: e.target.files[0].name,
                       });
                     }}
                   />
@@ -209,28 +235,83 @@ function Create() {
                     variant="contained"
                     color="primary"
                     disabled={
-                      file === null || fileUploadedSuccessfully === true
+                      videoFile === null ||
+                      videoFileUploadedSuccessfully === true
                     }
-                    onClick={uploadFile}
+                    onClick={uploadVideoFile}
                   >
-                    {fileLoading ? (
+                    {videoFileLoading ? (
+                      <CircularProgress color="inherit" />
+                    ) : (
+                      "Upload Video"
+                    )}
+                  </Button>
+                </div>
+                <div className={classes.FileInput}>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    required
+                    disabled={thumbnailFileUploadedSuccessfully}
+                    onChange={(e) => {
+                      setThumbnailFile({ file: e.target.files[0] });
+                      setFormData({
+                        ...formData,
+                        thumbnail: e.target.files[0].name,
+                      });
+                    }}
+                  />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={
+                      thumbnailFile === null ||
+                      thumbnailFileUploadedSuccessfully === true
+                    }
+                    onClick={uploadThumbnailFile}
+                  >
+                    {thumbnailFileLoading ? (
                       <CircularProgress color="inherit" />
                     ) : (
                       "Upload Thumbnail"
                     )}
                   </Button>
                 </div>
+
+                <div className={classes.Input}>
+                  <FormControl fullWidth>
+                    <InputLabel>Video Pricing</InputLabel>
+                    <Select
+                      required
+                      label="Video Pricing"
+                      value={formData.premium}
+                      onChange={(e) => {
+                        setFormData({
+                          ...formData,
+                          premium: e.target.value,
+                        });
+                      }}
+                    >
+                      <MenuItem value={false}>Free</MenuItem>
+                      <MenuItem value={true}>Premium</MenuItem>
+                    </Select>
+                  </FormControl>
+                </div>
+
                 <div className={classes.Button}>
                   <Button
                     type="submit"
                     variant="contained"
                     color="primary"
-                    disabled={fileUploadedSuccessfully === false}
+                    disabled={
+                      videoFileUploadedSuccessfully === false ||
+                      thumbnailFileUploadedSuccessfully === false
+                    }
                   >
-                    {blogLoading ? (
+                    {videoLoading ? (
                       <CircularProgress color="inherit" />
                     ) : (
-                      "Add Blog"
+                      "Update Video"
                     )}
                   </Button>
                 </div>

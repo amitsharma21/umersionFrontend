@@ -109,6 +109,18 @@ const SideBar = () => {
             <ListItem
               button
               onClick={() => {
+                history.push("/dashboard/categories");
+              }}
+            >
+              <ListItemIcon>
+                <CategoryIcon />
+              </ListItemIcon>
+              <ListItemText primary="Categories" />
+            </ListItem>
+
+            <ListItem
+              button
+              onClick={() => {
                 history.push("/dashboard/coupons");
               }}
             >
@@ -149,18 +161,6 @@ const SideBar = () => {
                 <LiveHelpIcon />
               </ListItemIcon>
               <ListItemText primary="FAQ" />
-            </ListItem>
-
-            <ListItem
-              button
-              onClick={() => {
-                history.push("/dashboard/category");
-              }}
-            >
-              <ListItemIcon>
-                <CategoryIcon />
-              </ListItemIcon>
-              <ListItemText primary="Category" />
             </ListItem>
           </List>
         </Paper>

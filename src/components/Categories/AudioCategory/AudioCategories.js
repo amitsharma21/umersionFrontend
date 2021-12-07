@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   Card,
   Typography,
-  CircularProgress,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   ButtonGroup,
   Button,
+  CircularProgress,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -18,28 +18,31 @@ import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import axios from "axios";
 import { useHistory } from "react-router-dom";
 
+import Layout from "../../../UI/Layout/Layout";
 import useStyles from "./styles";
-import Layout from "../../UI/Layout/Layout";
-import { URL } from "../../constants/url";
+import { URL } from "../../../constants/url";
 
-const GuidedMeditation = () => {
+const Blogs = () => {
   const classes = useStyles();
   const history = useHistory();
-  const [guidedMeditation, setGuidedMeditation] = useState(null);
+  const [audioCategories, setAudioCategories] = useState(null);
+  const [renderLoading, setRenderLoading] = useState(true);
 
   useEffect(async () => {
-    const { data } = await axios.get(`${URL}/guidedmeditation/fetchall`);
-    setGuidedMeditation(data);
+    const { data } = await axios.get(`${URL}/audiocategory/fetchall`);
+    setAudioCategories(data);
+    setRenderLoading(false);
   }, []);
 
-  const deleteGuidedMeditationHandler = async (id) => {
-    if (window.confirm("Do you want to delete this Guided Meditation")) {
-      const newArray = guidedMeditation.filter((single) => {
-        if (single._id !== id) return true;
+  const deleteAudioCategoryHandler = async (id) => {
+    if (window.confirm("Do you want to delete this Category")) {
+      const newArray = audioCategories.filter((category) => {
+        if (category._id !== id) return true;
         else return false;
       });
-      setGuidedMeditation(newArray);
-      await axios.delete(`${URL}/guidedmeditation/delete/${id}`);
+      setAudioCategories(newArray);
+      await axios.delete(`${URL}/audiocategory/delete/${id}`);
+      alert("Category Deleted Successfully");
     }
   };
 
@@ -47,81 +50,77 @@ const GuidedMeditation = () => {
     <Layout>
       <Card className={classes.Card}>
         <div className={classes.Header}>
-          <Typography variant="h5">Guided Meditation</Typography>
+          <Typography variant="h5">Audio Categories</Typography>
           <ButtonGroup>
             <Button
               variant="contained"
               color="primary"
-              onClick={() => history.push("/dashboard/guidedmeditation/create")}
+              onClick={() => history.push("/dashboard/categories/audio/create")}
             >
               Create New
             </Button>
           </ButtonGroup>
         </div>
-        {guidedMeditation === null ? (
+        {renderLoading ? (
           <CircularProgress />
         ) : (
-          <Table className={classes.table} aria-label="users table">
+          <Table className={classes.table} aria-label="audio category table">
             <TableHead>
               <TableRow>
                 <TableCell align="center">
+                  <strong>Id</strong>
+                </TableCell>
+                <TableCell align="center">
                   <strong>Title</strong>
                 </TableCell>
-                <TableCell align="center">
-                  <strong>Description</strong>
-                </TableCell>
-                <TableCell align="center">
-                  <strong>Media Tracks</strong>
-                </TableCell>
+
                 <TableCell align="center">
                   <strong>Actions</strong>
                 </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {guidedMeditation.map((single) => (
-                <TableRow key={single._id}>
+              {audioCategories.map((audioCategory) => (
+                <TableRow key={audioCategory._id}>
                   <TableCell component="th" scope="row" align="center">
-                    {single.title}
+                    {audioCategory._id}
                   </TableCell>
                   <TableCell align="center">
-                    {single.description.substr(
+                    {audioCategory.title.substr(
                       0,
-                      Math.min(20, single.description.length)
+                      Math.min(20, audioCategory.title.length)
                     )}
                     ....
                   </TableCell>
-                  <TableCell align="center">
-                    <RemoveRedEyeIcon
-                      color="warning"
-                      className={classes.Icon}
-                      onClick={() =>
-                        history.push(
-                          `/dashboard/guidedmeditation/view/${single._id}`
-                        )
-                      }
-                    />
-                  </TableCell>
+
                   <TableCell align="center">
                     <ButtonGroup
                       variant="outlined"
                       style={{ marginBottom: "10px" }}
                     >
+                      <RemoveRedEyeIcon
+                        color="warning"
+                        className={classes.Icon}
+                        onClick={() => {
+                          history.push(
+                            `/dashboard/categories/audio/view/${audioCategory._id}`
+                          );
+                        }}
+                      />
                       <EditIcon
                         color="primary"
                         className={classes.Icon}
-                        onClick={() =>
+                        onClick={() => {
                           history.push(
-                            `/dashboard/guidedmeditation/edit/${single._id}`
-                          )
-                        }
+                            `/dashboard/categories/audio/edit/${audioCategory._id}`
+                          );
+                        }}
                       />
                       <DeleteIcon
                         color="error"
                         onClick={() =>
-                          deleteGuidedMeditationHandler(single._id)
+                          deleteAudioCategoryHandler(audioCategory._id)
                         }
-                        title="delete"
                         className={classes.Icon}
                       />
                     </ButtonGroup>
@@ -136,4 +135,4 @@ const GuidedMeditation = () => {
   );
 };
 
-export default GuidedMeditation;
+export default Blogs;
